@@ -1,4 +1,4 @@
-package server
+package main
 
 type Hub struct {
 	clients map[*Client]bool
