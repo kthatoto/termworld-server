@@ -1,18 +1,15 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	hub := newHub()
-	go hub.run()
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "OK",
+		})
 	})
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	r.Run()
 }
