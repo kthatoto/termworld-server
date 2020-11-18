@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"termworld-server/app/controllers"
+	"github.com/kthatoto/termworld-server/app/controllers"
 )
 
 func main() {
@@ -15,5 +15,5 @@ func main() {
 		// loginGroup.GET("/:token", controllers.LoginToken)
 	}
 
-	r.Run()
+	router.Run()
 }
