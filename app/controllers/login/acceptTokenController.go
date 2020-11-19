@@ -13,15 +13,16 @@ import (
 func AcceptToken(c *gin.Context) {
 	token := c.Param("token")
 
-	_, err := db.Database.Collection("users").UpdateOne(
+	var updatedDocument bson.M
+	err := db.Database.Collection("users").FindOneAndUpdate(
 		context.Background(),
 		bson.M{ "token": token },
 		bson.M{ "$set": bson.M{ "accepted": true } },
-	)
+	).Decode(&updatedDocument)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{ "token": token })
+	c.Status(http.StatusOK)
 }
