@@ -14,8 +14,8 @@ func LoginNew(c *gin.Context) {
 	collection := db.Database.Collection("users")
 
 	res, err := collection.InsertOne(context.Background(), bson.M{
-		"Email": "aaaa",
-		"Token": "cccc",
+		"email": "aaaa",
+		"token": "cccc",
 	})
 	if err != nil {
 		log.Fatal(err)
