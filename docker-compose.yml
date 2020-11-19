@@ -6,8 +6,8 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootroot
+      MONGO_INITDB_ROOT_USERNAME: root_
+      MONGO_INITDB_ROOT_PASSWORD: rootroot_
     ports:
       - 27017:27017
     volumes:
