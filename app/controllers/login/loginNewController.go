@@ -29,10 +29,9 @@ func LoginNew(c *gin.Context) {
 		return
 	}
 
-	collection := db.Database.Collection("users")
 	upsert := true
 	loginToken := utils.RandomString(12)
-	_, err := collection.UpdateOne(
+	_, err := db.Database.Collection("users").UpdateOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
 		bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false }},
