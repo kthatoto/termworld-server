@@ -6,9 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/goware/emailx"
-	db "github.com/kthatoto/termworld-server/app/database"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/kthatoto/termworld-server/app/database"
+	"github.com/kthatoto/termworld-server/app/services"
 )
 
 type loginNewRequestJson struct {
@@ -30,7 +32,7 @@ func LoginNew(c *gin.Context) {
 		return
 	}
 
-	collection := db.Database.Collection("users")
+	collection := database.Database.Collection("users")
 	upsert := true
 	_, err := collection.UpdateOne(
 		context.Background(),
@@ -44,4 +46,6 @@ func LoginNew(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
 		return
 	}
+
+	services.LoginMailSend()
 }
