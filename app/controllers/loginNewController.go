@@ -11,14 +11,11 @@ import (
 
 	db "github.com/kthatoto/termworld-server/app/database"
 	"github.com/kthatoto/termworld-server/app/services"
+	"github.com/kthatoto/termworld-server/app/utils"
 )
 
 type loginNewRequestJson struct {
 	Email string `json:"email"`
-}
-
-func generateTokenString() string {
-	return "newtoken"
 }
 
 func LoginNew(c *gin.Context) {
@@ -34,7 +31,7 @@ func LoginNew(c *gin.Context) {
 
 	collection := db.Database.Collection("users")
 	upsert := true
-	loginToken := generateTokenString()
+	loginToken := utils.RandomString(12)
 	_, err := collection.UpdateOne(
 		context.Background(),
 		bson.M{ "email": data.Email },

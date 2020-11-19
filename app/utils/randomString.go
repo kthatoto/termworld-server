@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"math/rand"
 )
 
 func RandomString(length int) string {
