@@ -34,12 +34,11 @@ func LoginNew(c *gin.Context) {
 
 	collection := db.Database.Collection("users")
 	upsert := true
+	loginToken := generateTokenString()
 	_, err := collection.UpdateOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
-		bson.M{ "$set": bson.M{
-			"token": generateTokenString(),
-		}},
+		bson.M{ "$set": bson.M{ "token": loginToken }},
 		&options.UpdateOptions{ Upsert: &upsert },
 	)
 	if err != nil {
@@ -47,7 +46,7 @@ func LoginNew(c *gin.Context) {
 		return
 	}
 
-	err = services.LoginMailSend(data.Email)
+	err = services.LoginMailSend(data.Email, loginToken)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
 		return
