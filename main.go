@@ -13,9 +13,9 @@ func main() {
 	router.Use(middlewares.LoadEnv())
 	loginGroup := router.Group("/login")
 	{
-		loginGroup.POST("/new", login.LoginNew)
-		loginGroup.POST("",     login.TryLogin)
-		// loginGroup.GET("/:token", controllers.LoginToken)
+		loginGroup.POST("/new",   login.LoginNew)
+		loginGroup.POST("",       login.TryLogin)
+		loginGroup.GET("/:token", login.AcceptToken)
 	}
 
 	router.Run()

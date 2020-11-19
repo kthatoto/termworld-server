@@ -35,7 +35,7 @@ func LoginNew(c *gin.Context) {
 	_, err := collection.UpdateOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
-		bson.M{ "$set": bson.M{ "token": loginToken }},
+		bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false }},
 		&options.UpdateOptions{ Upsert: &upsert },
 	)
 	if err != nil {
