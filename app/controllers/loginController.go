@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/goware/emailx"
 	db "github.com/kthatoto/termworld-server/app/database"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -15,8 +15,8 @@ type loginNewRequestJson struct {
 	Email string `json:"email"`
 }
 
-func generateTokenString() {
-	return "aaaabbbbcccc"
+func generateTokenString() string {
+	return "newtoken"
 }
 
 func LoginNew(c *gin.Context) {
@@ -31,11 +31,14 @@ func LoginNew(c *gin.Context) {
 	}
 
 	collection := db.Database.Collection("users")
-	res, err := collection.UpdateOne(
+	upsert := true
+	_, err := collection.UpdateOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
-		bson.M{ "token": generateTokenString() },
-		mongo.UpdateOptions{ Upsert: true },
+		bson.M{ "$set": bson.M{
+			"token": generateTokenString(),
+		}},
+		&options.UpdateOptions{ Upsert: &upsert },
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
