@@ -10,20 +10,14 @@ import (
 	db "github.com/kthatoto/termworld-server/app/database"
 )
 
-type User struct {
-	Email string
-	Token string
-	Accepted bool
-}
-
 func AcceptToken(c *gin.Context) {
 	token := c.Param("token")
 
-	var user *User
-	err := db.Database.Collection("users").FindOne(
+	_, err := db.Database.Collection("users").UpdateOne(
 		context.Background(),
 		bson.M{ "token": token },
-	).Decode(user)
+		bson.M{ "$set": bson.M{ "accepted": true } },
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
 		return
