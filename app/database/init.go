@@ -19,5 +19,5 @@ func init() {
 		log.Fatal(err)
 		return
 	}
-	Database = client.Database("termworld_development")
+	Database = client.Database("tw")
 }
