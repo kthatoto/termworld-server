@@ -14,7 +14,7 @@ func main() {
 	loginGroup := router.Group("/login")
 	{
 		loginGroup.POST("/new", login.LoginNew)
-		loginGroup.POST("/",    login.TryLogin)
+		loginGroup.POST("",     login.TryLogin)
 		// loginGroup.GET("/:token", controllers.LoginToken)
 	}
 
