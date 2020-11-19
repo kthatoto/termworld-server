@@ -47,5 +47,9 @@ func LoginNew(c *gin.Context) {
 		return
 	}
 
-	services.LoginMailSend()
+	err = services.LoginMailSend(data.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
+		return
+	}
 }
