@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 
-	"github.com/kthatoto/termworld-server/app/database"
+	db "github.com/kthatoto/termworld-server/app/database"
 	"github.com/kthatoto/termworld-server/app/services"
 )
 
@@ -32,7 +32,7 @@ func LoginNew(c *gin.Context) {
 		return
 	}
 
-	collection := database.Database.Collection("users")
+	collection := db.Database.Collection("users")
 	upsert := true
 	_, err := collection.UpdateOne(
 		context.Background(),
