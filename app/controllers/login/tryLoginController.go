@@ -3,11 +3,14 @@ package login
 import (
 	"context"
 	"net/http"
+	"time"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/goware/emailx"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	db "github.com/kthatoto/termworld-server/app/database"
 )
@@ -32,8 +35,9 @@ func TryLogin(c *gin.Context) {
 		return
 	}
 
+	userCollection := db.Database.Collection("users")
 	var user UserFromDB
-	err := db.Database.Collection("users").FindOne(
+	err := userCollection.FindOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
 	).Decode(&user)
@@ -41,7 +45,20 @@ func TryLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
 		return
 	}
-	fmt.Println(user)
-	fmt.Println(user.Email)
-	fmt.Println(user.Accepted)
+	if user.Accepted {
+		c.JSON(http.StatusBadRequest, gin.H{ "error": "The email is already accepted" })
+		return
+	}
+
+	matchStage := bson.D{{"$match", bson.D{{"operationType", "update"}}}}
+	opts := options.ChangeStream().SetMaxAwaitTime(15 * time.Second)
+	changeStream, err := userCollection.Watch(context.Background(), mongo.Pipeline{matchStage}, opts)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
+		return
+	}
+	for changeStream.Next(context.Background()) {
+		fmt.Println(changeStream.Current)
+	}
+	fmt.Println("finished")
 }
