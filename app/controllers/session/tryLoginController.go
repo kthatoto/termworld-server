@@ -10,16 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	db "github.com/kthatoto/termworld-server/app/database"
+	"github.com/kthatoto/termworld-server/app/models"
 )
 
 type tryLoginRequestJson struct {
 	Email string `json:"email"`
-}
-
-type UserFromDB struct {
-	Email string
-	Token string
-	Accepted bool
 }
 
 func TryLogin(c *gin.Context) {
@@ -34,7 +29,7 @@ func TryLogin(c *gin.Context) {
 	}
 
 	userCollection := db.Database.Collection("users")
-	var user UserFromDB
+	var user models.User
 	err := userCollection.FindOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
