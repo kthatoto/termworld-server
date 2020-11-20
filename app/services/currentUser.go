@@ -6,10 +6,11 @@ import (
 	"github.com/kthatoto/termworld-server/app/models"
 )
 
-func CurrentUser(c *gin.Context) *models.User {
+func CurrentUser(c *gin.Context) models.User {
 	user, ok := c.Get("currentUser")
 	if !ok {
-		return nil
+		var emptyUser models.User
+		return emptyUser
 	}
-	return user.(*models.User)
+	return user.(models.User)
 }
