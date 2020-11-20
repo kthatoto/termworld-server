@@ -16,6 +16,11 @@ type tryLoginRequestJson struct {
 	Email string `json:"email"`
 }
 
+type UserFromDB struct {
+	Email string
+	Accepted bool
+}
+
 func TryLogin(c *gin.Context) {
 	var data loginNewRequestJson
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -27,16 +32,16 @@ func TryLogin(c *gin.Context) {
 		return
 	}
 
-	var result bson.M
+	var user UserFromDB
 	err := db.Database.Collection("users").FindOne(
 		context.Background(),
 		bson.M{ "email": data.Email },
-	).Decode(&result)
+	).Decode(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
 		return
 	}
-	fmt.Println(result)
-	// fmt.Println(result.email)
-	// fmt.Println(result.accepted)
+	fmt.Println(user)
+	fmt.Println(user.Email)
+	fmt.Println(user.Accepted)
 }
