@@ -48,7 +48,7 @@ func TryLogin(c *gin.Context) {
 		return
 	}
 
-	for i := 0; i < 15; i++ {
+	for i := 0; i < 10; i++ {
 		userCollection.FindOne(
 			context.Background(),
 			bson.M{ "email": data.Email },
@@ -59,7 +59,7 @@ func TryLogin(c *gin.Context) {
 		time.Sleep(1 * time.Second)
 	}
 	if !user.Accepted {
-		c.Status(http.StatusContinue)
+		c.Status(http.StatusRequestTimeout)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{ "token": user.Token })
