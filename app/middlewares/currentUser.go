@@ -10,19 +10,17 @@ import (
 	db "github.com/kthatoto/termworld-server/app/database"
 )
 
-var CurrentUser *models.User
-var CurrentUserExists bool
-
 func LoadCurrentUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("X-Termworld-Token")
 		if len(token) > 0 {
+			var user models.User
 			err := db.Database.Collection("users").FindOne(
 				context.Background(),
 				bson.M{ "token": token },
-			).Decode(&CurrentUser)
+			).Decode(&user)
 			if err == nil {
-				CurrentUserExists = true
+				c.Set("currentUser", user)
 			}
 		}
 		c.Next()
