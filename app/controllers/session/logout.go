@@ -13,5 +13,6 @@ func Logout(c *gin.Context) {
 	if err := services.Authentication(c); err != nil {
 		return
 	}
+
 	c.Status(http.StatusOK)
 }

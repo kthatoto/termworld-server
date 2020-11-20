@@ -10,7 +10,9 @@ import (
 func main() {
 	router := gin.Default()
 
-	router.Use(middlewares.LoadEnv())
+	middlewares.LoadEnv()
+	router.Use(middlewares.LoadCurrentUser())
+
 	sessionGroup := router.Group("")
 	{
 		sessionGroup.POST("/login/new", session.LoginNew)
