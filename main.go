@@ -26,7 +26,7 @@ func main() {
 		sessionGroup.POST("/login/new", session.LoginNew)
 		sessionGroup.POST("/login", session.TryLogin)
 		sessionGroup.GET("/login/:token", session.AcceptToken)
-		sessionGroup.DELETE("/logout", session.Logout)
+		sessionGroup.DELETE("/logout", middlewares.Authentication(), session.Logout)
 	}
 
 	router.Run()

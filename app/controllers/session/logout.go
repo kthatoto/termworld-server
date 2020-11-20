@@ -12,9 +12,6 @@ import (
 )
 
 func Logout(c *gin.Context) {
-	if err := services.Authentication(c); err != nil {
-		return
-	}
 	currentUser := services.CurrentUser(c)
 
 	_, err := db.Database.Collection("users").UpdateOne(
