@@ -1,4 +1,4 @@
-package middlewares
+package database
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 var Database *mongo.Database
 
-func init() {
+func Init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://root:rootroot@localhost:27017"))
