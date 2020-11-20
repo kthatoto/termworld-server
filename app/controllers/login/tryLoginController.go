@@ -4,13 +4,10 @@ import (
 	"context"
 	"net/http"
 	"time"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/goware/emailx"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	db "github.com/kthatoto/termworld-server/app/database"
 )
@@ -21,6 +18,7 @@ type tryLoginRequestJson struct {
 
 type UserFromDB struct {
 	Email string
+	Token string
 	Accepted bool
 }
 
@@ -46,19 +44,23 @@ func TryLogin(c *gin.Context) {
 		return
 	}
 	if user.Accepted {
-		c.JSON(http.StatusBadRequest, gin.H{ "error": "The email is already accepted" })
+		c.JSON(http.StatusOK, gin.H{ "token": user.Token })
 		return
 	}
 
-	matchStage := bson.D{{"$match", bson.D{{"operationType", "update"}}}}
-	opts := options.ChangeStream().SetMaxAwaitTime(15 * time.Second)
-	changeStream, err := userCollection.Watch(context.Background(), mongo.Pipeline{matchStage}, opts)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{ "error": err.Error() })
+	for i := 0; i < 15; i++ {
+		userCollection.FindOne(
+			context.Background(),
+			bson.M{ "email": data.Email },
+		).Decode(&user)
+		if user.Accepted {
+			break
+		}
+		time.Sleep(1 * time.Second)
+	}
+	if !user.Accepted {
+		c.Status(http.StatusContinue)
 		return
 	}
-	for changeStream.Next(context.Background()) {
-		fmt.Println(changeStream.Current)
-	}
-	fmt.Println("finished")
+	c.JSON(http.StatusOK, gin.H{ "token": user.Token })
 }
