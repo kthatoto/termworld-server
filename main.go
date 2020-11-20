@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/kthatoto/termworld-server/app/controllers/login"
+	"github.com/kthatoto/termworld-server/app/controllers/session"
 	"github.com/kthatoto/termworld-server/app/middlewares"
 )
 
@@ -11,11 +11,12 @@ func main() {
 	router := gin.Default()
 
 	router.Use(middlewares.LoadEnv())
-	loginGroup := router.Group("/login")
+	sessionGroup := router.Group("")
 	{
-		loginGroup.POST("/new",   login.LoginNew)
-		loginGroup.POST("",       login.TryLogin)
-		loginGroup.GET("/:token", login.AcceptToken)
+		sessionGroup.POST("/login/new", session.LoginNew)
+		sessionGroup.POST("/login", session.TryLogin)
+		sessionGroup.GET("/login/:token", session.AcceptToken)
+		sessionGroup.DELETE("/logout", session.Logout)
 	}
 
 	router.Run()
