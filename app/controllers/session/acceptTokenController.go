@@ -24,5 +24,5 @@ func AcceptToken(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusOK)
+	c.HTML(http.StatusOK, "accept.html", gin.H{})
 }

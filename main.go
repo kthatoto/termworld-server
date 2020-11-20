@@ -21,6 +21,7 @@ func main() {
 
 	router.Use(middlewares.LoadCurrentUser())
 
+	router.LoadHTMLGlob("app/templates/*.html")
 	sessionGroup := router.Group("")
 	{
 		sessionGroup.POST("/login/new", session.LoginNew)
