@@ -1,9 +1,10 @@
-package services
+package middlewares
 
 import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/kthatoto/termworld-server/app/models"
 	db "github.com/kthatoto/termworld-server/app/database"
@@ -20,7 +21,7 @@ func LoadCurrentUser() gin.HandlerFunc {
 				context.Background(),
 				bson.M{ "token": token },
 			).Decode(CurrentUser)
-			if err {
+			if err != nil {
 				CurrentUserExists = false
 			}
 		} else {

@@ -15,7 +15,7 @@ func Authentication(c *gin.Context) error {
 		c.JSON(http.StatusUnauthorized, gin.H{ "error": message })
 		return errors.New(message)
 	}
-	if !middlewares.CurrentUserExists.Accepted {
+	if !middlewares.CurrentUser.Accepted {
 		message := "The token is not accepted"
 		c.JSON(http.StatusUnauthorized, gin.H{ "error": message })
 		return errors.New(message)
