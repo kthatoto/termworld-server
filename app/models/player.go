@@ -19,7 +19,7 @@ type Player struct {
 type PlayerModel struct{}
 
 func playerCollection() *mongo.Collection {
-	return db.Database.Collection("player")
+	return db.Database.Collection("players")
 }
 
 func (m PlayerModel) Create(form forms.PlayerCreateForm) (httpStatus int, err error){
