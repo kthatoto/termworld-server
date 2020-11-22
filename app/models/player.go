@@ -38,12 +38,12 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUserID primitive
 	if count > 0 {
 		return http.StatusConflict, errors.New("The name is already used")
 	}
-	// _, err = playerCollection().InsertOne(
-	// 	context.Background(),
-	// 	bson.M{ "name": form.Name, "userID": currentUserID },
-	// )
-	// if err != nil {
-	// 	return http.StatusInternalServerError, err
-	// }
+	_, err = playerCollection().InsertOne(
+		context.Background(),
+		bson.M{ "name": form.Name, "userID": currentUserID },
+	)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 	return http.StatusCreated, nil
 }
