@@ -35,7 +35,7 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm) (httpStatus int, err er
 		return http.StatusInternalServerError, err
 	}
 	if count > 0 {
-		return http.StatusBadRequest, errors.New("The name is already used")
+		return http.StatusConflict, errors.New("The name is already used")
 	}
 	_, err = playerCollection().InsertOne(
 		context.Background(),
