@@ -20,10 +20,10 @@ import (
 )
 
 type User struct {
-	ID primitive.ObjectID
-	Email string
-	Token string
-	Accepted bool
+	ID       primitive.ObjectID `bson:"_id"`
+	Email    string             `bson:"email"`
+	Token    string             `bson:"token"`
+	Accepted bool               `bson:"accepted"`
 }
 
 type UserModel struct{}

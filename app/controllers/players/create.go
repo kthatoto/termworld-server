@@ -18,7 +18,8 @@ func Create(c *gin.Context) {
 	}
 
 	var playerModel models.PlayerModel
-	httpStatus, err := playerModel.Create(form, services.CurrentUser(c).ID)
+	currentUser := services.CurrentUser(c)
+	httpStatus, err := playerModel.Create(form, currentUser.ID)
 	if err != nil {
 		c.JSON(httpStatus, gin.H{ "error": err.Error() })
 		return
