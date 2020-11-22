@@ -6,8 +6,10 @@ import (
 	"net/smtp"
 	"os"
 	"fmt"
+	"time"
 
 	"github.com/goware/emailx"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -24,6 +26,8 @@ type User struct {
 
 type UserModel struct{}
 
+var userCollection *mongo.Collection = db.Database.Collection("users")
+
 func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 	if err := emailx.Validate(form.Email); err != nil {
 		return http.StatusBadRequest, err
@@ -31,7 +35,7 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 
 	upsert := true
 	loginToken := utils.RandomString(12)
-	_, err = db.Database.Collection("users").UpdateOne(
+	_, err = userCollection.UpdateOne(
 		context.Background(),
 		bson.M{ "email": form.Email },
 		bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false } },
@@ -47,6 +51,40 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 	}
 
 	return http.StatusCreated, nil
+}
+
+func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int, err error) {
+	if err := emailx.Validate(form.Email); err != nil {
+		return token, http.StatusBadRequest, err
+	}
+
+	var user User
+	err = userCollection.FindOne(
+		context.Background(),
+		bson.M{ "email": form.Email },
+	).Decode(&user)
+	if err != nil {
+		return token, http.StatusBadRequest, err
+	}
+
+	if user.Accepted {
+		return token, http.StatusOK, nil
+	}
+
+	for i := 0; i < 10; i++ {
+		userCollection.FindOne(
+			context.Background(),
+			bson.M{ "email": form.Email },
+		).Decode(&user)
+		if user.Accepted {
+			break
+		}
+		time.Sleep(1 * time.Second)
+	}
+	if !user.Accepted {
+		return token, http.StatusRequestTimeout, nil
+	}
+	return user.Token, http.StatusOK, nil
 }
 
 func loginMailSend(to string, token string) error {
