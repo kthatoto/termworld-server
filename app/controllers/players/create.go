@@ -7,6 +7,7 @@ import (
 
 	"github.com/kthatoto/termworld-server/app/forms"
 	"github.com/kthatoto/termworld-server/app/models"
+	"github.com/kthatoto/termworld-server/app/services"
 )
 
 func Create(c *gin.Context) {
@@ -17,7 +18,7 @@ func Create(c *gin.Context) {
 	}
 
 	var playerModel models.PlayerModel
-	httpStatus, err := playerModel.Create(form)
+	httpStatus, err := playerModel.Create(form, services.CurrentUser(c).ID)
 	if err != nil {
 		c.JSON(httpStatus, gin.H{ "error": err.Error() })
 		return

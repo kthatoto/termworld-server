@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/kthatoto/termworld-server/app/forms"
 	db "github.com/kthatoto/termworld-server/app/database"
@@ -19,6 +20,7 @@ import (
 )
 
 type User struct {
+	ID primitive.ObjectID
 	Email string
 	Token string
 	Accepted bool
