@@ -7,7 +7,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/kthatoto/termworld-server/app/forms"
 	db "github.com/kthatoto/termworld-server/app/database"
@@ -23,7 +22,7 @@ func playerCollection() *mongo.Collection {
 	return db.Database.Collection("players")
 }
 
-func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUserID primitive.ObjectID) (httpStatus int, err error){
+func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (httpStatus int, err error){
 	if len(form.Name) == 0 {
 		return http.StatusBadRequest, errors.New("Name is required")
 	}
@@ -40,7 +39,7 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUserID primitive
 	}
 	_, err = playerCollection().InsertOne(
 		context.Background(),
-		bson.M{ "name": form.Name, "userID": currentUserID },
+		bson.M{ "name": form.Name, "userID": currentUser.ID },
 	)
 	if err != nil {
 		return http.StatusInternalServerError, err
