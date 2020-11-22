@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 
-	"github.com/kthatoto/termworld-server/app/models"
 	db "github.com/kthatoto/termworld-server/app/database"
+	"github.com/kthatoto/termworld-server/app/models"
 )
 
 func LoadCurrentUser() gin.HandlerFunc {
@@ -17,7 +17,7 @@ func LoadCurrentUser() gin.HandlerFunc {
 			var user models.User
 			err := db.Database.Collection("users").FindOne(
 				context.Background(),
-				bson.M{ "token": token },
+				bson.M{"token": token},
 			).Decode(&user)
 			if err == nil {
 				c.Set("currentUser", user)
