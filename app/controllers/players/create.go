@@ -13,14 +13,14 @@ import (
 func Create(c *gin.Context) {
 	var form forms.PlayerCreateForm
 	if err := c.ShouldBindJSON(&form); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var playerModel models.PlayerModel
 	httpStatus, err := playerModel.Create(form, services.CurrentUser(c))
 	if err != nil {
-		c.JSON(httpStatus, gin.H{ "error": err.Error() })
+		c.JSON(httpStatus, gin.H{"error": err.Error()})
 		return
 	}
 	c.Status(httpStatus)
