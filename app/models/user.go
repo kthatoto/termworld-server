@@ -26,7 +26,9 @@ type User struct {
 
 type UserModel struct{}
 
-var userCollection *mongo.Collection = db.Database.Collection("users")
+func userCollection() *mongo.Collection {
+	return db.Database.Collection("users")
+}
 
 func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 	if err := emailx.Validate(form.Email); err != nil {
@@ -35,7 +37,7 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 
 	upsert := true
 	loginToken := utils.RandomString(12)
-	_, err = userCollection.UpdateOne(
+	_, err = userCollection().UpdateOne(
 		context.Background(),
 		bson.M{ "email": form.Email },
 		bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false } },
@@ -59,7 +61,7 @@ func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int,
 	}
 
 	var user User
-	err = userCollection.FindOne(
+	err = userCollection().FindOne(
 		context.Background(),
 		bson.M{ "email": form.Email },
 	).Decode(&user)
@@ -72,7 +74,7 @@ func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int,
 	}
 
 	for i := 0; i < 10; i++ {
-		userCollection.FindOne(
+		userCollection().FindOne(
 			context.Background(),
 			bson.M{ "email": form.Email },
 		).Decode(&user)
