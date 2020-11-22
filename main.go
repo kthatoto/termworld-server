@@ -33,7 +33,8 @@ func main() {
 
 	playersGroup := router.Group("/players")
 	{
-		playersGroup.POST("", players.)
+		playersGroup.POST("", middlewares.Authentication(), players.Create)
+		playersGroup.GET("", middlewares.Authentication(), players.Index)
 	}
 
 	router.Run()
