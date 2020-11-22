@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"github.com/kthatoto/termworld-server/app/middlewares"
-	"github.com/kthatoto/termworld-server/app/database"
-	"github.com/kthatoto/termworld-server/app/controllers/sessions"
 	"github.com/kthatoto/termworld-server/app/controllers/players"
+	"github.com/kthatoto/termworld-server/app/controllers/sessions"
+	"github.com/kthatoto/termworld-server/app/database"
+	"github.com/kthatoto/termworld-server/app/middlewares"
 )
 
 func main() {

@@ -27,17 +27,6 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (http
 		return http.StatusBadRequest, errors.New("Name is required")
 	}
 
-	count, err := playerCollection().CountDocuments(
-		context.Background(),
-		bson.M{ "name": form.Name },
-	)
-	if err != nil {
-		return http.StatusInternalServerError, err
-	}
-	if count > 0 {
-		return http.StatusConflict, errors.New("The name is already used")
-	}
-
 	userPlayersCount, err := playerCollection().CountDocuments(
 		context.Background(),
 		bson.M{ "userID": currentUser.ID },
@@ -47,6 +36,17 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (http
 	}
 	if int(userPlayersCount) >= currentUser.MaxPlayerCount {
 		return http.StatusForbidden, errors.New("Your player count already reached max count")
+	}
+
+	count, err := playerCollection().CountDocuments(
+		context.Background(),
+		bson.M{ "name": form.Name },
+	)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	if count > 0 {
+		return http.StatusConflict, errors.New("The name is already used")
 	}
 
 	_, err = playerCollection().InsertOne(
