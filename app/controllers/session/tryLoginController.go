@@ -11,19 +11,16 @@ import (
 
 	db "github.com/kthatoto/termworld-server/app/database"
 	"github.com/kthatoto/termworld-server/app/models"
+	"github.com/kthatoto/termworld-server/app/forms"
 )
 
-type tryLoginRequestJson struct {
-	Email string `json:"email"`
-}
-
 func TryLogin(c *gin.Context) {
-	var data loginNewRequestJson
-	if err := c.ShouldBindJSON(&data); err != nil {
+	var form forms.LoginForm
+	if err := c.ShouldBindJSON(&form); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
 		return
 	}
-	if err := emailx.Validate(data.Email); err != nil {
+	if err := emailx.Validate(form.Email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
 		return
 	}
@@ -32,7 +29,7 @@ func TryLogin(c *gin.Context) {
 	var user models.User
 	err := userCollection.FindOne(
 		context.Background(),
-		bson.M{ "email": data.Email },
+		bson.M{ "email": form.Email },
 	).Decode(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{ "error": err.Error() })
@@ -46,7 +43,7 @@ func TryLogin(c *gin.Context) {
 	for i := 0; i < 10; i++ {
 		userCollection.FindOne(
 			context.Background(),
-			bson.M{ "email": data.Email },
+			bson.M{ "email": form.Email },
 		).Decode(&user)
 		if user.Accepted {
 			break
