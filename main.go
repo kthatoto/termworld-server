@@ -8,7 +8,8 @@ import (
 
 	"github.com/kthatoto/termworld-server/app/middlewares"
 	"github.com/kthatoto/termworld-server/app/database"
-	"github.com/kthatoto/termworld-server/app/controllers/session"
+	"github.com/kthatoto/termworld-server/app/controllers/sessions"
+	"github.com/kthatoto/termworld-server/app/controllers/players"
 )
 
 func main() {
@@ -22,12 +23,17 @@ func main() {
 	router.Use(middlewares.LoadCurrentUser())
 
 	router.LoadHTMLGlob("app/templates/*.html")
-	sessionGroup := router.Group("")
+	sessionsGroup := router.Group("")
 	{
-		sessionGroup.POST("/login/new", session.LoginNew)
-		sessionGroup.POST("/login", session.TryLogin)
-		sessionGroup.GET("/login/:token", session.AcceptToken)
-		sessionGroup.DELETE("/logout", middlewares.Authentication(), session.Logout)
+		sessionsGroup.POST("/login/new", sessions.LoginNew)
+		sessionsGroup.POST("/login", sessions.TryLogin)
+		sessionsGroup.GET("/login/:token", sessions.AcceptToken)
+		sessionsGroup.DELETE("/logout", middlewares.Authentication(), sessions.Logout)
+	}
+
+	playersGroup := router.Group("/players")
+	{
+		playersGroup.POST("", players.)
 	}
 
 	router.Run()
