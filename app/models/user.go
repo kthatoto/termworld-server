@@ -70,7 +70,7 @@ func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int,
 	}
 
 	if user.Accepted {
-		return token, http.StatusOK, nil
+		return user.Token, http.StatusOK, nil
 	}
 
 	for i := 0; i < 10; i++ {
