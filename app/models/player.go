@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	db "github.com/kthatoto/termworld-server/app/database"
@@ -13,7 +14,8 @@ import (
 )
 
 type Player struct {
-	Name string `bson:"name"`
+	ID   primitive.ObjectID `bson:"_id" json:"id"`
+	Name string             `bson:"name" json:"name"`
 }
 
 type PlayerModel struct{}
@@ -57,4 +59,19 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (http
 		return http.StatusInternalServerError, err
 	}
 	return http.StatusCreated, nil
+}
+
+func (m PlayerModel) Index(currentUser User) ([]Player, int, error) {
+	cursor, err := playerCollection().Find(
+		context.Background(),
+		bson.M{"userID": currentUser.ID},
+	)
+	var players []Player
+	if err != nil {
+		return players, http.StatusInternalServerError, err
+	}
+	if err := cursor.All(context.Background(), &players); err != nil {
+		return players, http.StatusInternalServerError, err
+	}
+	return players, http.StatusOK, nil
 }
