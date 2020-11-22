@@ -2,19 +2,19 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/smtp"
 	"os"
-	"fmt"
 	"time"
 
 	"github.com/goware/emailx"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/kthatoto/termworld-server/app/forms"
 	db "github.com/kthatoto/termworld-server/app/database"
+	"github.com/kthatoto/termworld-server/app/forms"
 	"github.com/kthatoto/termworld-server/app/utils"
 )
 
@@ -45,8 +45,8 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 	if existed {
 		_, err = userCollection().UpdateOne(
 			context.Background(),
-			bson.M{ "email": form.Email },
-			bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false } },
+			bson.M{"email": form.Email},
+			bson.M{"$set": bson.M{"token": loginToken, "accepted": false}},
 		)
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -55,10 +55,10 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 		_, err = userCollection().InsertOne(
 			context.Background(),
 			bson.M{
-				"email": form.Email,
+				"email":          form.Email,
 				"maxPlayerCount": 1,
-				"token": loginToken,
-				"accepted": false,
+				"token":          loginToken,
+				"accepted":       false,
 			},
 		)
 		if err != nil {
@@ -82,7 +82,7 @@ func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int,
 	var user User
 	err = userCollection().FindOne(
 		context.Background(),
-		bson.M{ "email": form.Email },
+		bson.M{"email": form.Email},
 	).Decode(&user)
 	if err != nil {
 		return token, http.StatusBadRequest, err
@@ -95,7 +95,7 @@ func (m UserModel) TryLogin(form forms.LoginForm) (token string, httpStatus int,
 	for i := 0; i < 10; i++ {
 		userCollection().FindOne(
 			context.Background(),
-			bson.M{ "email": form.Email },
+			bson.M{"email": form.Email},
 		).Decode(&user)
 		if user.Accepted {
 			break
@@ -121,7 +121,7 @@ func loginMailSend(to string, token string) error {
 		"\r\n" +
 		"Please click the following link to login\r\n" +
 		loginLink +
-	"")
+		"")
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, from, []string{to}, msg)
 	return err
@@ -130,7 +130,7 @@ func loginMailSend(to string, token string) error {
 func checkExistenceByEmail(email string) (bool, error) {
 	count, err := userCollection().CountDocuments(
 		context.Background(),
-		bson.M{ "email": email },
+		bson.M{"email": email},
 	)
 	if err != nil {
 		return false, err
