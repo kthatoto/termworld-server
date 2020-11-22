@@ -8,6 +8,7 @@ import (
 
 	"github.com/kthatoto/termworld-server/app/controllers/players"
 	"github.com/kthatoto/termworld-server/app/controllers/sessions"
+	"github.com/kthatoto/termworld-server/app/websocket"
 	"github.com/kthatoto/termworld-server/app/database"
 	"github.com/kthatoto/termworld-server/app/middlewares"
 )
@@ -36,6 +37,10 @@ func main() {
 		playersGroup.POST("", middlewares.Authentication(), players.Create)
 		playersGroup.GET("", middlewares.Authentication(), players.Index)
 	}
+
+	hub := websocket.NewHub()
+	go hub.run()
+	router.GET("/gaming", middlewares.Authentication(), websocket.Connect)
 
 	router.Run()
 }
