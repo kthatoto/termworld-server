@@ -10,7 +10,6 @@ import (
 
 	"github.com/goware/emailx"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -38,16 +37,33 @@ func (m UserModel) LoginNew(form forms.LoginForm) (httpStatus int, err error) {
 		return http.StatusBadRequest, err
 	}
 
-	upsert := true
 	loginToken := utils.RandomString(12)
-	_, err = userCollection().UpdateOne(
-		context.Background(),
-		bson.M{ "email": form.Email },
-		bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false } },
-		&options.UpdateOptions{ Upsert: &upsert },
-	)
+	existed, err := checkExistenceByEmail(form.Email)
 	if err != nil {
 		return http.StatusInternalServerError, err
+	}
+	if existed {
+		_, err = userCollection().UpdateOne(
+			context.Background(),
+			bson.M{ "email": form.Email },
+			bson.M{ "$set": bson.M{ "token": loginToken, "accepted": false } },
+		)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+	} else {
+		_, err = userCollection().InsertOne(
+			context.Background(),
+			bson.M{
+				"email": form.Email,
+				"maxPlayerCount": 1,
+				"token": loginToken,
+				"accepted": false,
+			},
+		)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 	}
 
 	err = loginMailSend(form.Email, loginToken)
@@ -109,4 +125,15 @@ func loginMailSend(to string, token string) error {
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, from, []string{to}, msg)
 	return err
+}
+
+func checkExistenceByEmail(email string) (bool, error) {
+	count, err := userCollection().CountDocuments(
+		context.Background(),
+		bson.M{ "email": email },
+	)
+	if err != nil {
+		return false, err
+	}
+	return (count > 0), nil
 }
