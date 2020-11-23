@@ -12,10 +12,17 @@ var upgrader = ws.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func Connect(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Reader, nil)
-	if err != nil {
-		c.Status(http.StatusInternalServerError)
-		return
+func ConnectWith(hub *Hub) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Reader, nil)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		client := &Client{conn: conn, send: make(chan []byte, 1024)}
+		hub.register <- client
+		go client.writePump(hub)
+		go client.readPump(hub)
 	}
 }
