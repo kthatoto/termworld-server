@@ -80,7 +80,7 @@ func (client *Client) writePump(hub *Hub) {
 			}
 		case <-ticker.C:
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := client.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			if err := client.conn.WriteMessage(ws.PingMessage, nil); err != nil {
 				return
 			}
 		}

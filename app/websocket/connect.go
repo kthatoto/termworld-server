@@ -14,7 +14,7 @@ var upgrader = ws.Upgrader{
 
 func ConnectWith(hub *Hub) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		conn, err := upgrader.Upgrade(c.Writer, c.Reader, nil)
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
 			return

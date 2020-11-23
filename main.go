@@ -39,7 +39,7 @@ func main() {
 	}
 
 	hub := websocket.NewHub()
-	go hub.run()
+	go hub.Run()
 	router.GET("/gaming", middlewares.Authentication(), websocket.ConnectWith(hub))
 
 	router.Run()
