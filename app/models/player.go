@@ -37,7 +37,7 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (http
 		return http.StatusInternalServerError, err
 	}
 	if int(userPlayersCount) >= currentUser.MaxPlayerCount {
-		return http.StatusForbidden, errors.New("Your player count already reached max count")
+		return http.StatusForbidden, errors.New("Your players count already reached max count")
 	}
 
 	count, err := playerCollection().CountDocuments(
