@@ -47,10 +47,10 @@ func (client *Client) handleMessages(hub *Hub) {
 		if err != nil {
 			return
 		}
-		if message == "requestMap" {
-			writer.Write("response map!!!")
+		if string(message) == "requestMap" {
+			writer.Write([]byte("response map!!!"))
 		} else {
-			writer.Write("not supported")
+			writer.Write([]byte("not supported"))
 		}
 		writer.Close()
 	}
