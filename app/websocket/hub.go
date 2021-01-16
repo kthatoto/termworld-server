@@ -1,5 +1,7 @@
 package websocket
 
+import "fmt"
+
 type Hub struct {
 	clients    map[*Client]bool
 	broadcast  chan []byte
@@ -21,11 +23,13 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
+			fmt.Printf("registered! current clients: %d\n", len(h.clients))
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
 			}
+			fmt.Printf("unregistered! current clients: %d\n", len(h.clients))
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
