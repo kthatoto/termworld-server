@@ -25,15 +25,15 @@ type Client struct {
 	send chan []byte
 }
 
-func (client *Client) readPump(hub *Hub) {
+func (client *Client) handleMessages(hub *Hub) {
 	defer func() {
 		hub.unregister <- client
 		client.conn.Close()
 	}()
 
-	client.conn.SetReadLimit(maxMessageSize)
-	client.conn.SetReadDeadline(time.Now().Add(pongWait))
-	client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	// client.conn.SetReadLimit(maxMessageSize)
+	// client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	// client.conn.SetPongHandler(func(string) error { client.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, message, err := client.conn.ReadMessage()
 		if err != nil {
@@ -43,46 +43,55 @@ func (client *Client) readPump(hub *Hub) {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		hub.broadcast <- message
-	}
-}
-
-func (client *Client) writePump(hub *Hub) {
-	ticker := time.NewTicker(pingPeriod)
-	defer func() {
-		ticker.Stop()
-		client.conn.Close()
-	}()
-
-	for {
-		select {
-		case message, ok := <-client.send:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if !ok {
-				client.conn.WriteMessage(ws.CloseMessage, []byte{})
-				return
-			}
-
-			writer, err := client.conn.NextWriter(ws.TextMessage)
-			if err != nil {
-				return
-			}
-			writer.Write(message)
-
-			n := len(client.send)
-			for i := 0; i < n; i++ {
-				writer.Write(newline)
-				writer.Write(<-client.send)
-			}
-
-			if err := writer.Close(); err != nil {
-				return
-			}
-		case <-ticker.C:
-			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := client.conn.WriteMessage(ws.PingMessage, nil); err != nil {
-				return
-			}
+		writer, err := client.conn.NextWriter(ws.TextMessage)
+		if err != nil {
+			return
 		}
+		if message == "requestMap" {
+			writer.Write("response map!!!")
+		} else {
+			writer.Write("not supported")
+		}
+		writer.Close()
 	}
 }
+
+// func (client *Client) writePump(hub *Hub) {
+// 	ticker := time.NewTicker(pingPeriod)
+// 	defer func() {
+// 		ticker.Stop()
+// 		client.conn.Close()
+// 	}()
+//
+// 	for {
+// 		select {
+// 		case message, ok := <-client.send:
+// 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+// 			if !ok {
+// 				client.conn.WriteMessage(ws.CloseMessage, []byte{})
+// 				return
+// 			}
+//
+// 			writer, err := client.conn.NextWriter(ws.TextMessage)
+// 			if err != nil {
+// 				return
+// 			}
+// 			writer.Write(message)
+//
+// 			n := len(client.send)
+// 			for i := 0; i < n; i++ {
+// 				writer.Write(newline)
+// 				writer.Write(<-client.send)
+// 			}
+//
+// 			if err := writer.Close(); err != nil {
+// 				return
+// 			}
+// 		case <-ticker.C:
+// 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
+// 			if err := client.conn.WriteMessage(ws.PingMessage, nil); err != nil {
+// 				return
+// 			}
+// 		}
+// 	}
+// }

@@ -22,7 +22,7 @@ func ConnectWith(hub *Hub) gin.HandlerFunc {
 
 		client := &Client{conn: conn, send: make(chan []byte, 1024)}
 		hub.register <- client
-		go client.writePump(hub)
-		go client.readPump(hub)
+		// go client.writePump(hub)
+		go client.handleMessages(hub)
 	}
 }
