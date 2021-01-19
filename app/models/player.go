@@ -97,7 +97,7 @@ func (m PlayerModel) UpdateLive(player *Player, flag bool) (error) {
 	var updatedDocument bson.M
 	err := playerCollection().FindOneAndUpdate(
 		context.Background(),
-		bson.M{"ID": player.ID},
+		bson.M{"_id": player.ID},
 		bson.M{"$set": bson.M{"live": flag}},
 	).Decode(&updatedDocument)
 	if err != nil {
