@@ -53,7 +53,12 @@ func (m PlayerModel) Create(form forms.PlayerCreateForm, currentUser User) (http
 
 	_, err = playerCollection().InsertOne(
 		context.Background(),
-		bson.M{"name": form.Name, "userID": currentUser.ID},
+		bson.M{
+			"name": form.Name,
+			"userID": currentUser.ID,
+			"live": false,
+			"status": bson.M{},
+		},
 	)
 	if err != nil {
 		return http.StatusInternalServerError, err
