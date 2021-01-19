@@ -29,7 +29,7 @@ func Handle(currentUser *models.User, command Command) (error) {
 
 func HandleStart(player *models.Player) (error) {
 	var playerModel models.PlayerModel
-	err := PlayerModel.UpdateLive(player, true)
+	err := playerModel.UpdateLive(player, true)
 	if err != nil {
 		return err
 	}

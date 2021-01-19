@@ -3,8 +3,7 @@ package websocket
 import (
 	"bytes"
 	"log"
-	"time"
-    "encoding/json"
+	"encoding/json"
 
 	ws "github.com/gorilla/websocket"
 
