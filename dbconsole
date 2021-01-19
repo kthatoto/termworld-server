@@ -1,2 +1,2 @@
 #!/bin/sh
-docker-compose exec mongo mongo tw -u root -prootroot
+docker-compose exec mongo mongo -u root -prootroot
