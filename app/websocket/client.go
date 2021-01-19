@@ -4,15 +4,12 @@ import (
 	"bytes"
 	"log"
 	"time"
+    "encoding/json"
 
 	ws "github.com/gorilla/websocket"
-)
 
-const (
-	writeWait      = 10 * time.Second    // Time allowed to write a message to the peer.
-	pongWait       = 60 * time.Second    // Time allowed to read the next pong message from the peer.
-	pingPeriod     = (pongWait * 9) / 10 // Send pings to peer with this period. Must be less than pongWait.
-	maxMessageSize = 512                 // Maximum message size allowed from peer.
+	"github.com/kthatoto/termworld-server/app/models"
+	"github.com/kthatoto/termworld-server/app/websocket/handlers"
 )
 
 var (
@@ -21,8 +18,8 @@ var (
 )
 
 type Client struct {
-	conn *ws.Conn
-	send chan []byte
+	conn        *ws.Conn
+	currentUser *models.User
 }
 
 func (client *Client) handleMessages(hub *Hub) {
@@ -35,21 +32,28 @@ func (client *Client) handleMessages(hub *Hub) {
 		_, message, err := client.conn.ReadMessage()
 		if err != nil {
 			if ws.IsUnexpectedCloseError(err, ws.CloseGoingAway, ws.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Printf("error: %v\n", err)
 			}
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		writer, err := client.conn.NextWriter(ws.TextMessage)
+
+		var command handlers.Command
+		if err = json.Unmarshal(message, &command); err != nil {
+			log.Printf("error: %v\n", err)
+			break
+		}
+		err = handlers.Handle(client.currentUser, command)
 		if err != nil {
-			return
+			log.Println(err)
+			break
 		}
 
-		if string(message) == "requestMap" {
-			writer.Write([]byte("response map!!!"))
-		} else {
-			writer.Write([]byte("not supported"))
-		}
-		writer.Close()
+		// writer, err := client.conn.NextWriter(ws.TextMessage)
+		// if err != nil {
+		// 	return
+		// }
+		// writer.Write([]byte("response map!!!"))
+		// writer.Close()
 	}
 }

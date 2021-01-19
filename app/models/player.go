@@ -80,3 +80,28 @@ func (m PlayerModel) Index(currentUser User) ([]Player, int, error) {
 	}
 	return players, http.StatusOK, nil
 }
+
+func (m PlayerModel) FindByName(currentUser User, name string) (Player, error) {
+	var player Player
+	err := playerCollection().FindOne(
+		context.Background(),
+		bson.M{"userID": currentUser.ID, "name": name},
+	).Decode(&player)
+	if err != nil {
+		return player, err
+	}
+	return player, nil
+}
+
+func (m PlayerModel) UpdateLive(player *Player, flag bool) (error) {
+	var updatedDocument bson.M
+	err := playerCollection().FindOneAndUpdate(
+		context.Background(),
+		bson.M{"ID": player.ID},
+		bson.M{"$set": bson.M{"live": flag}},
+	).Decode(&updatedDocument)
+	if err != nil {
+		return err
+	}
+	return nil
+}

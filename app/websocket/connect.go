@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	ws "github.com/gorilla/websocket"
+
+	"github.com/kthatoto/termworld-server/app/services"
 )
 
 var upgrader = ws.Upgrader{
@@ -20,7 +22,8 @@ func ConnectWith(hub *Hub) gin.HandlerFunc {
 			return
 		}
 
-		client := &Client{conn: conn, send: make(chan []byte, 1024)}
+		currentUser := services.CurrentUser(c)
+		client := &Client{conn: conn, currentUser: &currentUser}
 		hub.register <- client
 		go client.handleMessages(hub)
 	}
