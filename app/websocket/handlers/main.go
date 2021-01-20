@@ -21,9 +21,9 @@ type Response struct {
 
 func Handle(currentUser *models.User, command Command) (Response, error) {
 	resp := Response{
-		RequestId: command.RequestId
-		Success: false
-		Message: ""
+		RequestId: command.RequestId,
+		Success: false,
+		Message: "",
 	}
 
 	var playerModel models.PlayerModel

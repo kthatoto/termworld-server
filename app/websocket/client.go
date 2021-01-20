@@ -33,26 +33,32 @@ func (client *Client) handleMessages(hub *Hub) {
 			if ws.IsUnexpectedCloseError(err, ws.CloseGoingAway, ws.CloseAbnormalClosure) {
 				log.Printf("error: %v\n", err)
 			}
-			break
+			continue
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
 		var command handlers.Command
 		if err = json.Unmarshal(message, &command); err != nil {
 			log.Printf("error: %v\n", err)
-			break
+			continue
 		}
+		var resp handlers.Response
 		resp, err = handlers.Handle(client.currentUser, command)
 		if err != nil {
 			log.Println(err)
-			break
+			continue
 		}
 
 		writer, err := client.conn.NextWriter(ws.TextMessage)
 		if err != nil {
-			return
+			log.Println(err)
+			continue
 		}
-		respJson := json.Marshal(resp)
+		respJson, err := json.Marshal(resp)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
 		writer.Write([]byte(respJson))
 		writer.Close()
 	}
