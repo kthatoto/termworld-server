@@ -42,17 +42,18 @@ func (client *Client) handleMessages(hub *Hub) {
 			log.Printf("error: %v\n", err)
 			break
 		}
-		err = handlers.Handle(client.currentUser, command)
+		resp, err = handlers.Handle(client.currentUser, command)
 		if err != nil {
 			log.Println(err)
 			break
 		}
 
-		// writer, err := client.conn.NextWriter(ws.TextMessage)
-		// if err != nil {
-		// 	return
-		// }
-		// writer.Write([]byte("response map!!!"))
-		// writer.Close()
+		writer, err := client.conn.NextWriter(ws.TextMessage)
+		if err != nil {
+			return
+		}
+		respJson := json.Marshal(resp)
+		writer.Write([]byte(respJson))
+		writer.Close()
 	}
 }
