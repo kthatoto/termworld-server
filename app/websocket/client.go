@@ -42,23 +42,14 @@ func (client *Client) handleMessages(hub *Hub) {
 			log.Printf("error: %v\n", err)
 			continue
 		}
+
+		writer, _ := client.conn.NextWriter(ws.TextMessage)
 		var resp handlers.Response
 		resp, err = handlers.Handle(client.currentUser, command)
 		if err != nil {
 			log.Println(err)
-			continue
 		}
-
-		writer, err := client.conn.NextWriter(ws.TextMessage)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		respJson, err := json.Marshal(resp)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
+		respJson, _ := json.Marshal(resp)
 		writer.Write([]byte(respJson))
 		writer.Close()
 	}
