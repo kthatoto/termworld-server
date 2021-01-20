@@ -33,7 +33,7 @@ func (client *Client) handleMessages(hub *Hub) {
 			if ws.IsUnexpectedCloseError(err, ws.CloseGoingAway, ws.CloseAbnormalClosure) {
 				log.Printf("error: %v\n", err)
 			}
-			continue
+			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
