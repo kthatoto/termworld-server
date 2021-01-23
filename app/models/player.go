@@ -14,8 +14,13 @@ import (
 )
 
 type Player struct {
-	ID   primitive.ObjectID `bson:"_id" json:"id"`
-	Name string             `bson:"name" json:"name"`
+	ID     primitive.ObjectID `bson:"_id"    json:"id"`
+	Name   string             `bson:"name"   json:"name"`
+	Live   bool               `bson:"live"   json:"live"`
+	Status PlayerStatus       `bson:"status" json:"status"`
+}
+
+type PlayerStatus struct {
 }
 
 type PlayerModel struct{}
