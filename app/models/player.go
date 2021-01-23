@@ -21,6 +21,14 @@ type Player struct {
 }
 
 type PlayerStatus struct {
+	maxHP    int      `bson:"maxHP"`
+	HP       int      `bson:"HP"`
+	Position Position `bson:"position"`
+}
+
+type Position struct {
+	X int `bson:"x"`
+	Y int `bson:"y"`
 }
 
 type PlayerModel struct{}
@@ -104,6 +112,31 @@ func (m PlayerModel) UpdateLive(player *Player, flag bool) (error) {
 		context.Background(),
 		bson.M{"_id": player.ID},
 		bson.M{"$set": bson.M{"live": flag}},
+	).Decode(&updatedDocument)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m PlayerModel) StartPlayer(player *Player) error {
+	var updatedDocument bson.M
+	newPlayerStatus := PlayerStatus{
+		maxHP: player.Status.maxHP,
+		HP: player.Status.maxHP,
+		Position: Position{ X: 0, Y: 0 },
+	}
+	if newPlayerStatus.maxHP == 0 {
+		newPlayerStatus.maxHP = 10
+		newPlayerStatus.HP = 10
+	}
+	statusBson, _ := bson.Marshal(newPlayerStatus)
+	err := playerCollection().FindOneAndUpdate(
+		context.Background(),
+		bson.M{"_id": player.ID},
+		bson.M{"$set": bson.M{
+			"status": statusBson,
+		}},
 	).Decode(&updatedDocument)
 	if err != nil {
 		return err

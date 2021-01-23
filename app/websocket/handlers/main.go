@@ -57,6 +57,10 @@ func HandleStart(player *models.Player, resp *Response) error {
 	if err != nil {
 		return err
 	}
+	err = playerModel.StartPlayer(player)
+	if err != nil {
+		return err
+	}
 
 	resp.Message = fmt.Sprintf("%s started!", player.Name)
 	return nil
