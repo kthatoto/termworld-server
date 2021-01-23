@@ -36,6 +36,8 @@ func Handle(currentUser *models.User, command Command) (Response, error) {
 	switch command.Command {
 	case "start":
 		err = HandleStart(&player, &resp)
+	case "stop":
+		err = HandleStop(&player, &resp)
 	default:
 		resp.Message = fmt.Sprintf("command: %s is not found", command.Command)
 		return resp, nil
@@ -49,7 +51,7 @@ func Handle(currentUser *models.User, command Command) (Response, error) {
 	return resp, nil
 }
 
-func HandleStart(player *models.Player, resp *Response) (error) {
+func HandleStart(player *models.Player, resp *Response) error {
 	var playerModel models.PlayerModel
 	err := playerModel.UpdateLive(player, true)
 	if err != nil {
@@ -57,5 +59,16 @@ func HandleStart(player *models.Player, resp *Response) (error) {
 	}
 
 	resp.Message = fmt.Sprintf("%s started!", player.Name)
+	return nil
+}
+
+func HandleStop(player *models.Player, resp *Response) error {
+	var playerModel models.PlayerModel
+	err := playerModel.UpdateLive(player, false)
+	if err != nil {
+		return err
+	}
+
+	resp.Message = fmt.Sprintf("%s stopped!", player.Name)
 	return nil
 }
