@@ -121,21 +121,18 @@ func (m PlayerModel) UpdateLive(player *Player, flag bool) (error) {
 
 func (m PlayerModel) StartPlayer(player *Player) error {
 	var updatedDocument bson.M
-	newPlayerStatus := PlayerStatus{
-		maxHP: player.Status.maxHP,
-		HP: player.Status.maxHP,
-		Position: Position{ X: 0, Y: 0 },
-	}
-	if newPlayerStatus.maxHP == 0 {
-		newPlayerStatus.maxHP = 10
-		newPlayerStatus.HP = 10
-	}
-	statusBson, _ := bson.Marshal(newPlayerStatus)
 	err := playerCollection().FindOneAndUpdate(
 		context.Background(),
 		bson.M{"_id": player.ID},
 		bson.M{"$set": bson.M{
-			"status": statusBson,
+			"status": bson.M{
+				"maxHP": 10,
+				"HP": 10,
+				"position": bson.M{
+					"x": 0,
+					"y": 0,
+				},
+			},
 		}},
 	).Decode(&updatedDocument)
 	if err != nil {
