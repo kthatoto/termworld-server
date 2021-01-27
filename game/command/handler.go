@@ -30,9 +30,11 @@ func Handle(currentUser *models.User, command Command) (commands.Response, error
 
 	switch command.Command {
 	case "start":
-		err = commands.Start(&player, &resp)
+		err = commands.Start(&player, &resp, command.Options)
 	case "stop":
-		err = commands.Stop(&player, &resp)
+		err = commands.Stop(&player, &resp, command.Options)
+	case "move":
+		err = commands.Move(&player, &resp, command.Options)
 	default:
 		resp.Message = fmt.Sprintf("command: %s is not found", command.Command)
 		return resp, nil

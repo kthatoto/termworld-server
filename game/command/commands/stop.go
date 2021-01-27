@@ -6,7 +6,7 @@ import (
 	"github.com/kthatoto/termworld-server/app/models"
 )
 
-func Stop(player *models.Player, resp *Response) error {
+func Stop(player *models.Player, resp *Response, options []string) error {
 	var playerModel models.PlayerModel
 	err := playerModel.UpdateLive(player, false)
 	if err != nil {
