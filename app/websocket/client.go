@@ -9,6 +9,7 @@ import (
 
 	"github.com/kthatoto/termworld-server/app/models"
 	"github.com/kthatoto/termworld-server/game/command"
+	"github.com/kthatoto/termworld-server/game/command/commands"
 )
 
 var (
@@ -44,7 +45,7 @@ func (client *Client) handleMessages(hub *Hub) {
 		}
 
 		writer, _ := client.conn.NextWriter(ws.TextMessage)
-		var resp command.Response
+		var resp commands.Response
 		resp, err = command.Handle(client.currentUser, cmd)
 		if err != nil {
 			log.Println(err)

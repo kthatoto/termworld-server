@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kthatoto/termworld-server/app/models"
+	"github.com/kthatoto/termworld-server/game/command/commands"
 )
 
 type Command struct {
@@ -13,14 +14,8 @@ type Command struct {
 	RequestId  string   `json:"requestId"`
 }
 
-type Response struct {
-	RequestId string `json:"requestId"`
-	Success   bool   `json:"success"`
-	Message   string `json:"message"`
-}
-
-func Handle(currentUser *models.User, command Command) (Response, error) {
-	resp := Response{
+func Handle(currentUser *models.User, command Command) (commands.Response, error) {
+	resp := commands.Response{
 		RequestId: command.RequestId,
 		Success: false,
 		Message: "",
@@ -35,9 +30,9 @@ func Handle(currentUser *models.User, command Command) (Response, error) {
 
 	switch command.Command {
 	case "start":
-		err = HandleStart(&player, &resp)
+		err = commands.Start(&player, &resp)
 	case "stop":
-		err = HandleStop(&player, &resp)
+		err = commands.Stop(&player, &resp)
 	default:
 		resp.Message = fmt.Sprintf("command: %s is not found", command.Command)
 		return resp, nil
@@ -49,30 +44,4 @@ func Handle(currentUser *models.User, command Command) (Response, error) {
 	}
 	resp.Success = true
 	return resp, nil
-}
-
-func HandleStart(player *models.Player, resp *Response) error {
-	var playerModel models.PlayerModel
-	err := playerModel.UpdateLive(player, true)
-	if err != nil {
-		return err
-	}
-	err = playerModel.StartPlayer(player)
-	if err != nil {
-		return err
-	}
-
-	resp.Message = fmt.Sprintf("%s started!", player.Name)
-	return nil
-}
-
-func HandleStop(player *models.Player, resp *Response) error {
-	var playerModel models.PlayerModel
-	err := playerModel.UpdateLive(player, false)
-	if err != nil {
-		return err
-	}
-
-	resp.Message = fmt.Sprintf("%s stopped!", player.Name)
-	return nil
 }
