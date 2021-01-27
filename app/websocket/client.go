@@ -8,7 +8,7 @@ import (
 	ws "github.com/gorilla/websocket"
 
 	"github.com/kthatoto/termworld-server/app/models"
-	"github.com/kthatoto/termworld-server/app/websocket/handlers"
+	"github.com/kthatoto/termworld-server/game/command"
 )
 
 var (
@@ -37,15 +37,15 @@ func (client *Client) handleMessages(hub *Hub) {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
-		var command handlers.Command
-		if err = json.Unmarshal(message, &command); err != nil {
+		var cmd command.Command
+		if err = json.Unmarshal(message, &cmd); err != nil {
 			log.Printf("error: %v\n", err)
 			continue
 		}
 
 		writer, _ := client.conn.NextWriter(ws.TextMessage)
-		var resp handlers.Response
-		resp, err = handlers.Handle(client.currentUser, command)
+		var resp command.Response
+		resp, err = command.Handle(client.currentUser, cmd)
 		if err != nil {
 			log.Println(err)
 		}
