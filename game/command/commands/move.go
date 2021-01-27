@@ -19,5 +19,19 @@ func Move(player *models.Player, resp *Response, options []string) error {
 	if !(direction == "up" || direction == "down" || direction == "left" || direction == "right") {
 		return errors.New(fmt.Sprintf("%s は不正な方向です。up, down, left, rightから入力してください", direction))
 	}
+	dx, dy := 0, 0
+	switch direction {
+	case "up":
+		dy = 1
+	case "down":
+		dy = -1
+	case "left":
+		dx = -1
+	case "right":
+		dx = 1
+	}
+
+	var playerModel models.PlayerModel
+	playerModel.Move(player, dx, dy)
 	return nil
 }

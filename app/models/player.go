@@ -140,3 +140,21 @@ func (m PlayerModel) StartPlayer(player *Player) error {
 	}
 	return nil
 }
+
+func (m PlayerModel) Move(player *Player, dx int, dy int) error {
+	var updatedDocument bson.M
+	err := playerCollection().FindOneAndUpdate(
+		context.Background(),
+		bson.M{"_id": player.ID},
+		bson.M{"$set": bson.M{
+			"status.position": bson.M{
+				"x": player.Status.Position.X + dx,
+				"y": player.Status.Position.Y + dy,
+			},
+		}},
+	).Decode(&updatedDocument)
+	if err != nil {
+		return err
+	}
+	return nil
+}
