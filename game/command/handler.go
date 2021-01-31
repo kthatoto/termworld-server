@@ -24,7 +24,7 @@ func Handle(currentUser *models.User, command Command) (commands.Response, error
 	var playerModel models.PlayerModel
 	player, err := playerModel.FindByName(*currentUser, command.PlayerName)
 	if err != nil {
-		resp.Message = fmt.Sprintf("player: %s is not found", command.PlayerName)
+		resp.Message = fmt.Sprintf("player[%s] is not found", command.PlayerName)
 		return resp, err
 	}
 
@@ -36,7 +36,7 @@ func Handle(currentUser *models.User, command Command) (commands.Response, error
 	case "move":
 		err = commands.Move(&player, &resp, command.Options)
 	default:
-		resp.Message = fmt.Sprintf("command: %s is not found", command.Command)
+		resp.Message = fmt.Sprintf("command[%s] is not found", command.Command)
 		return resp, nil
 	}
 
