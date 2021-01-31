@@ -33,5 +33,6 @@ func Move(player *models.Player, resp *Response, options []string) error {
 
 	var playerModel models.PlayerModel
 	playerModel.Move(player, dx, dy)
+	resp.Message = fmt.Sprintf("player[%s] moved", player.Name)
 	return nil
 }
