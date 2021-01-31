@@ -21,14 +21,14 @@ type Player struct {
 }
 
 type PlayerStatus struct {
-	maxHP    int      `bson:"maxHP"`
-	HP       int      `bson:"HP"`
-	Position Position `bson:"position"`
+	MaxHP    int      `bson:"maxHP"    json:"maxHP"`
+	HP       int      `bson:"HP"       json:"HP"`
+	Position Position `bson:"position" json:"position"`
 }
 
 type Position struct {
-	X int `bson:"x"`
-	Y int `bson:"y"`
+	X int `bson:"x" json:"x"`
+	Y int `bson:"y" json:"y"`
 }
 
 type PlayerModel struct{}
