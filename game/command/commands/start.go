@@ -17,7 +17,7 @@ func Start(player *models.Player, resp *Response, options []string) error {
 		return err
 	}
 
-	resp.Message = fmt.Sprintf("%s started!", player.Name)
+	resp.Message = fmt.Sprintf("player[%s] started", player.Name)
 	return nil
 }
 

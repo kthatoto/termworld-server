@@ -13,6 +13,6 @@ func Stop(player *models.Player, resp *Response, options []string) error {
 		return err
 	}
 
-	resp.Message = fmt.Sprintf("%s stopped!", player.Name)
+	resp.Message = fmt.Sprintf("player[%s] stopped", player.Name)
 	return nil
 }
