@@ -1,16 +1,16 @@
 {
   "header": {
     "next": {
-      "top": "map_0_1.json",
-      "left": "map_-1_0.json",
-      "right": "map_1_0.json",
-      "bottom": "map_0_-1.json"
+      "top": "map_1_1.json",
+      "left": "map_0_0.json",
+      "right": null,
+      "bottom": "map_1_-1.json"
     },
     "edgePositions": {
-      "top": 0,
-      "left": 0,
-      "right": 19,
-      "bottom": 19
+      "top": 19,
+      "left": 20,
+      "right": 39,
+      "bottom": 0
     }
   },
   "grounds": [
