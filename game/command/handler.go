@@ -33,6 +33,8 @@ func Handle(currentUser *models.User, command Command) (commands.Response, error
 		err = commands.Start(&player, &resp, command.Options)
 	case "stop":
 		err = commands.Stop(&player, &resp, command.Options)
+	case "touch":
+		err = commands.Touch(&player, &resp, command.Options)
 	case "move":
 		err = commands.Move(&player, &resp, command.Options)
 	case "map":
